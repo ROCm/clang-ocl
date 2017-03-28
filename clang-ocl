@@ -1,0 +1,115 @@
+#!/bin/bash
+
+# set -x
+
+OPENCL_ROOT=/usr/lib/opencl
+BITCODE_DIR=$OPENCL_ROOT/lib/x86_64/bitcode
+CLANG=$OPENCL_ROOT/bin/x86_64/clang
+
+# $CLANG -O2 -cl-std=CL1.2 \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/opencl.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ockl.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ocml.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/irif.amdgcn.bc \
+# -include $OPENCL_ROOT/include/opencl-c.h \
+# $@
+
+
+$CLANG \
+-target amdgcn-amd-amdhsa-opencl -x cl \
+-D__AMD__=1  \
+-D__gfx803__=1  \
+-D__gfx803=1  \
+-D__OPENCL_VERSION__=120  \
+-D__IMAGE_SUPPORT__=1 \
+-O3 \
+-m64 \
+-cl-kernel-arg-info \
+-cl-std=CL1.2 \
+-Xclang -cl-ext=+cl_khr_fp64,+cl_khr_global_int32_base_atomics,+cl_khr_global_int32_extended_atomics,+cl_khr_local_int32_base_atomics,+cl_khr_local_int32_extended_atomics,+cl_khr_int64_base_atomics,+cl_khr_int64_extended_atomics,+cl_khr_3d_image_writes,+cl_khr_byte_addressable_store,+cl_khr_gl_sharing,+cl_amd_media_ops,+cl_amd_media_ops2,+cl_khr_subgroups \
+-Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/opencl.amdgcn.bc \
+-Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ocml.amdgcn.bc \
+-Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ockl.amdgcn.bc \
+-Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/irif.amdgcn.bc \
+-Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_correctly_rounded_sqrt_off.amdgcn.bc \
+-Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_daz_opt_on.amdgcn.bc \
+-Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_finite_only_off.amdgcn.bc \
+-Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_803.amdgcn.bc \
+-Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_unsafe_math_off.amdgcn.bc \
+-include $OPENCL_ROOT/include/opencl-c.h \
+$@
+
+
+# $CLANG -O2 -cl-std=CL1.2 \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/irif.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ockl.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_correctly_rounded_sqrt_off.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_daz_opt_off.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_finite_only_off.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_803.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_unsafe_math_off.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ocml.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/opencl.amdgcn.bc \
+# -include $OPENCL_ROOT/include/opencl-c.h \
+# $@
+
+
+# $CLANG -O2 -cl-std=CL1.2 \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/irif.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ockl.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_correctly_rounded_sqrt_off.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_correctly_rounded_sqrt_on.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_daz_opt_off.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_daz_opt_on.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_finite_only_off.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_finite_only_on.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_700.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_701.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_800.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_801.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_802.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_803.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_804.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_810.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_900.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_901.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_unsafe_math_off.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_unsafe_math_on.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ocml.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/opencl.amdgcn.bc \
+# -include $OPENCL_ROOT/include/opencl-c.h \
+# $@
+
+# $CLANG -O2 -cl-std=CL1.2 \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/irif.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ockl.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_correctly_rounded_sqrt_off.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_daz_opt_off.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_finite_only_off.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_803.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_unsafe_math_off.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ocml.amdgcn.bc \
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/opencl.amdgcn.bc \
+# -include $OPENCL_ROOT/include/opencl-c.h \
+# $@
+
+
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_daz_opt_on.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_correctly_rounded_sqrt_on.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_finite_only_on.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_700.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_701.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_800.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_801.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_802.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_804.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_810.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_900.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_901.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_unsafe_math_on.amdgcn.bc
+
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/opencl.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ockl.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ocml.amdgcn.bc
+# -Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/irif.amdgcn.bc
+# foo.cl -o foo.so
