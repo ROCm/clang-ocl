@@ -8,6 +8,9 @@ find_path(OPENCL_ROOT lib/x86_64/bitcode/opencl.amdgcn.bc
     PATHS
         /opt/rocm
 )
+if(NOT OPENCL_ROOT)
+    message(FATAL_ERROR "Can't find opencl")
+endif()
 
 configure_file(clang-ocl.in clang-ocl @ONLY)
 
