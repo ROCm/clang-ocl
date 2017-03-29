@@ -5,6 +5,7 @@ project(clang-ocl)
 find_path(OPENCL_ROOT lib/x86_64/bitcode/opencl.amdgcn.bc
     PATH_SUFFIXES 
         opencl
+        lib/opencl
     PATHS
         /opt/rocm
 )
