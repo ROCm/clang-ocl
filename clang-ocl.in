@@ -1,6 +1,6 @@
 #!/bin/bash
  
-OPENCL_ROOT=/home/fpadmin/opencl/opencl
+OPENCL_ROOT=@OPENCL_ROOT@
 BITCODE_DIR=${OPENCL_ROOT}/lib/x86_64/bitcode
 CLANG=${OPENCL_ROOT}/bin/x86_64/clang
 LLVM_LINK=${OPENCL_ROOT}/bin/x86_64/llvm-link
