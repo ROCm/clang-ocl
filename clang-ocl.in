@@ -1,10 +1,30 @@
 #!/bin/bash
-
-OPENCL_ROOT=@OPENCL_ROOT@
-BITCODE_DIR=$OPENCL_ROOT/lib/x86_64/bitcode
-CLANG=$OPENCL_ROOT/bin/x86_64/clang
-
-$CLANG \
+ 
+OPENCL_ROOT=/home/fpadmin/opencl/opencl
+BITCODE_DIR=${OPENCL_ROOT}/lib/x86_64/bitcode
+CLANG=${OPENCL_ROOT}/bin/x86_64/clang
+LLVM_LINK=${OPENCL_ROOT}/bin/x86_64/llvm-link
+ 
+while (( "$#" ))
+do
+    arg="$1"
+    case "$arg" in
+    -o)
+        shift
+        output_file=$1
+        ;;
+    -*)
+        options="${options} $1"
+        ;;
+    *)
+        input_file=$1
+        ;;
+    esac
+    shift
+done
+ 
+ 
+${CLANG} -c -emit-llvm \
 -target amdgcn-amd-amdhsa-opencl -x cl \
 -D__AMD__=1  \
 -D__gfx803__=1  \
@@ -16,15 +36,22 @@ $CLANG \
 -cl-kernel-arg-info \
 -cl-std=CL1.2 \
 -Xclang -cl-ext=+cl_khr_fp64,+cl_khr_global_int32_base_atomics,+cl_khr_global_int32_extended_atomics,+cl_khr_local_int32_base_atomics,+cl_khr_local_int32_extended_atomics,+cl_khr_int64_base_atomics,+cl_khr_int64_extended_atomics,+cl_khr_3d_image_writes,+cl_khr_byte_addressable_store,+cl_khr_gl_sharing,+cl_amd_media_ops,+cl_amd_media_ops2,+cl_khr_subgroups \
--Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/opencl.amdgcn.bc \
--Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ocml.amdgcn.bc \
--Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/ockl.amdgcn.bc \
--Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/irif.amdgcn.bc \
--Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_correctly_rounded_sqrt_off.amdgcn.bc \
--Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_daz_opt_on.amdgcn.bc \
--Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_finite_only_off.amdgcn.bc \
--Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_isa_version_803.amdgcn.bc \
--Xclang -mlink-bitcode-file -Xclang $BITCODE_DIR/oclc_unsafe_math_off.amdgcn.bc \
--include $OPENCL_ROOT/include/opencl-c.h \
-$@
-
+-include ${OPENCL_ROOT}/include/opencl-c.h \
+${options} -o ${output_file}.orig.bc ${input_file}
+ 
+${LLVM_LINK} -f -o ${output_file}.linked.bc ${output_file}.orig.bc \
+$BITCODE_DIR/opencl.amdgcn.bc \
+$BITCODE_DIR/ocml.amdgcn.bc \
+$BITCODE_DIR/ockl.amdgcn.bc \
+$BITCODE_DIR/irif.amdgcn.bc \
+$BITCODE_DIR/oclc_correctly_rounded_sqrt_off.amdgcn.bc \
+$BITCODE_DIR/oclc_daz_opt_on.amdgcn.bc \
+$BITCODE_DIR/oclc_finite_only_off.amdgcn.bc \
+$BITCODE_DIR/oclc_isa_version_803.amdgcn.bc \
+$BITCODE_DIR/oclc_unsafe_math_off.amdgcn.bc
+ 
+${CLANG} \
+-target amdgcn-amd-amdhsa-opencl \
+-O3 \
+-m64 \
+${options} -o ${output_file} ${output_file}.linked.bc
