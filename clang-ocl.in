@@ -4,6 +4,17 @@ OPENCL_ROOT=@OPENCL_ROOT@
 BITCODE_DIR=${OPENCL_ROOT}/lib/x86_64/bitcode
 CLANG=${OPENCL_ROOT}/bin/x86_64/clang
 LLVM_LINK=${OPENCL_ROOT}/bin/x86_64/llvm-link
+CLINFO=${OPENCL_ROOT}/bin/x86_64/clinfo
+
+TRIPLE=amdgcn-amd-amdhsa-opencl
+OPENCL_VER=0
+if [[ -e $CLINFO ]]; then
+  OPENCL_VER=$($CLINFO  | grep 'Platform Version' | sed 's:.*(\([0-9][0-9]*\).*:\1:')
+fi
+
+if [[ "$AMD_DEBUG_AMDGIZ" == 1 || $OPENCL_VER -ge 2534 ]]; then
+  TRIPLE=amdgcn-amd-amdhsa-amdgizcl
+fi
 
 gfxip=803
  
@@ -30,7 +41,7 @@ done
  
  
 ${CLANG} -c -emit-llvm \
--target amdgcn-amd-amdhsa-opencl -x cl \
+-target $TRIPLE -x cl \
 -D__AMD__=1  \
 -D__gfx${gfxip}__=1  \
 -D__gfx${gfxip}=1  \
@@ -57,7 +68,7 @@ $BITCODE_DIR/oclc_isa_version_${gfxip}.amdgcn.bc \
 $BITCODE_DIR/oclc_unsafe_math_off.amdgcn.bc
  
 ${CLANG} \
--target amdgcn-amd-amdhsa-opencl \
+-target $TRIPLE \
 -O3 \
 -m64 \
 -cl-kernel-arg-info \
