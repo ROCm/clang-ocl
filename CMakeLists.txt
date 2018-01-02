@@ -8,6 +8,7 @@ project(clang-ocl)
 find_package(ROCM PATHS /opt/rocm)
 include(ROCMSetupVersion)
 include(ROCMCreatePackage)
+include(CTest)
 
 rocm_setup_version(VERSION 0.2.0)
 
@@ -22,9 +23,13 @@ if(NOT OPENCL_ROOT)
     message(FATAL_ERROR "Can't find opencl")
 endif()
 
-configure_file(clang-ocl.in clang-ocl @ONLY)
+set(CLANG_OCL ${CMAKE_CURRENT_BINARY_DIR}/clang-ocl)
 
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/clang-ocl DESTINATION bin)
+configure_file(clang-ocl.in ${CLANG_OCL} @ONLY)
+
+add_subdirectory(test)
+
+install(PROGRAMS ${CLANG_OCL} DESTINATION bin)
 
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "rocm-opencl-dev")
 set(CPACK_RPM_PACKAGE_REQUIRES "rocm-opencl-devel")

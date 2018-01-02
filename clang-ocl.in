@@ -1,4 +1,6 @@
 #!/bin/bash
+
+set -e
  
 OPENCL_ROOT=@OPENCL_ROOT@
 BITCODE_DIR=${OPENCL_ROOT}/lib/x86_64/bitcode
