@@ -6,13 +6,9 @@ OPENCL_ROOT=@OPENCL_ROOT@
 BITCODE_DIR=${OPENCL_ROOT}/lib/x86_64/bitcode
 CLANG=${OPENCL_ROOT}/bin/x86_64/clang
 LLVM_LINK=${OPENCL_ROOT}/bin/x86_64/llvm-link
-CLINFO=${OPENCL_ROOT}/bin/x86_64/clinfo
 
 TRIPLE=amdgcn-amd-amdhsa-opencl
-OPENCL_VER=0
-if [[ -e $CLINFO ]]; then
-  OPENCL_VER=$($CLINFO  | grep 'Platform Version' | sed 's:.*(\([0-9][0-9]*\).*:\1:')
-fi
+OPENCL_VER=@OPENCL_VER@
 
 if [[ "$AMD_DEBUG_AMDGIZ" == 1 || $OPENCL_VER -ge 2534 ]]; then
   TRIPLE=amdgcn-amd-amdhsa-amdgizcl
@@ -67,7 +63,13 @@ $BITCODE_DIR/oclc_correctly_rounded_sqrt_off.amdgcn.bc \
 $BITCODE_DIR/oclc_daz_opt_on.amdgcn.bc \
 $BITCODE_DIR/oclc_finite_only_off.amdgcn.bc \
 $BITCODE_DIR/oclc_isa_version_${gfxip}.amdgcn.bc \
-$BITCODE_DIR/oclc_unsafe_math_off.amdgcn.bc
+$BITCODE_DIR/oclc_unsafe_math_off.amdgcn.bc |& tee ${output_file}.linked.bc.out
+
+# Fail on warnings
+if grep -qi warning ${output_file}.linked.bc.out; then
+    echo "llvm-link failed!"
+    exit 1
+fi
  
 ${CLANG} \
 -target $TRIPLE \
@@ -77,3 +79,6 @@ ${CLANG} \
 -mllvm -amdgpu-internalize-symbols -mllvm -amdgpu-early-inline-all \
 -mllvm -enable-si-insert-waitcnts \
 ${options} -o ${output_file} ${output_file}.linked.bc
+
+# Remove extra files
+rm ${output_file}.linked.bc*

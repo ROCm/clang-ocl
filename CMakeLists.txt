@@ -23,6 +23,13 @@ if(NOT OPENCL_ROOT)
     message(FATAL_ERROR "Can't find opencl")
 endif()
 
+find_program(CLINFO clinfo PATHS ${OPENCL_ROOT}/bin/x86_64/)
+execute_process(COMMAND ${CLINFO} OUTPUT_VARIABLE CLINFO_OUT)
+string(REGEX MATCH "Platform Version:.*\\(([0-9]+).*\\)" PLATFORM_VER ${CLINFO_OUT})
+set(OPENCL_VER ${CMAKE_MATCH_1})
+
+message(STATUS "OpenCL Version: ${OPENCL_VER}")
+
 set(CLANG_OCL ${CMAKE_CURRENT_BINARY_DIR}/clang-ocl)
 
 configure_file(clang-ocl.in ${CLANG_OCL} @ONLY)
