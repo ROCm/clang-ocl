@@ -25,8 +25,12 @@ endif()
 
 find_program(CLINFO clinfo PATHS ${OPENCL_ROOT}/bin/x86_64/)
 execute_process(COMMAND ${CLINFO} OUTPUT_VARIABLE CLINFO_OUT)
-string(REGEX MATCH "Platform Version:.*\\(([0-9]+).*\\)" PLATFORM_VER ${CLINFO_OUT})
-set(OPENCL_VER ${CMAKE_MATCH_1})
+if(RESULT EQUAL 0)
+    string(REGEX MATCH "Platform Version:.*\\(([0-9]+).*\\)" PLATFORM_VER ${CLINFO_OUT})
+    set(OPENCL_VER ${CMAKE_MATCH_1} CACHE STRING "")
+else()
+    set(OPENCL_VER 0 CACHE STRING "")
+endif()
 
 message(STATUS "OpenCL Version: ${OPENCL_VER}")
 
