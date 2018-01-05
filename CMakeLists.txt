@@ -27,9 +27,16 @@ find_program(CLINFO clinfo PATHS ${OPENCL_ROOT}/bin/x86_64/)
 execute_process(COMMAND ${CLINFO} OUTPUT_VARIABLE CLINFO_OUT)
 if(RESULT EQUAL 0)
     string(REGEX MATCH "Platform Version:.*\\(([0-9]+).*\\)" PLATFORM_VER ${CLINFO_OUT})
-    set(OPENCL_VER ${CMAKE_MATCH_1} CACHE STRING "")
+    set(OPENCL_VER ${CMAKE_MATCH_1})
+    if(OPENCL_VER VERSION_GREATER_EQUAL 2534)
+        set(TRIPLE amdgcn-amd-amdhsa-amdgizcl)
+    else()
+        set(TRIPLE amdgcn-amd-amdhsa-opencl)
+    endif()
 else()
-    set(OPENCL_VER 0 CACHE STRING "")
+    # TODO: Use llvm-dis to figure out the triple
+    # /opt/rocm/hcc/bin/llvm-dis -o - /opt/rocm/opencl/lib/x86_64/bitcode/oclc_isa_version_900.amdgcn.bc  | grep triple
+    set(TRIPLE amdgcn-amd-amdhsa-opencl)
 endif()
 
 message(STATUS "OpenCL Version: ${OPENCL_VER}")

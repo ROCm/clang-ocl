@@ -7,10 +7,9 @@ BITCODE_DIR=${OPENCL_ROOT}/lib/x86_64/bitcode
 CLANG=${OPENCL_ROOT}/bin/x86_64/clang
 LLVM_LINK=${OPENCL_ROOT}/bin/x86_64/llvm-link
 
-TRIPLE=amdgcn-amd-amdhsa-opencl
-OPENCL_VER=@OPENCL_VER@
+TRIPLE=@TRIPLE@
 
-if [[ "$AMD_DEBUG_AMDGIZ" == 1 || $OPENCL_VER -ge 2534 ]]; then
+if [[ "$AMD_DEBUG_AMDGIZ" == 1 ]]; then
   TRIPLE=amdgcn-amd-amdhsa-amdgizcl
 fi
 
