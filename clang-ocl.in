@@ -76,7 +76,6 @@ ${CLANG} \
 -m64 \
 -cl-kernel-arg-info \
 -mllvm -amdgpu-internalize-symbols -mllvm -amdgpu-early-inline-all \
--mllvm -enable-si-insert-waitcnts \
 ${options} -o ${output_file} ${output_file}.linked.bc
 
 # Remove extra files
