@@ -10,7 +10,7 @@ include(ROCMSetupVersion)
 include(ROCMCreatePackage)
 include(CTest)
 
-rocm_setup_version(VERSION 0.3.0)
+rocm_setup_version(VERSION 0.4.0)
 
 find_path(OPENCL_ROOT lib/x86_64/bitcode/opencl.amdgcn.bc
     PATH_SUFFIXES 
