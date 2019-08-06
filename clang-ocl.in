@@ -25,7 +25,7 @@ do
         ;;
     -mcpu=gfx*)
         gfxip=${1##*gfx}
-        ;&
+        ;;
     -*)
         options="${options} $1"
         ;;
