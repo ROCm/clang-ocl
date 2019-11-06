@@ -12,8 +12,8 @@ include(CTest)
 
 rocm_setup_version(VERSION 0.5.0)
 
-find_path(OPENCL_ROOT lib/x86_64/bitcode/opencl.amdgcn.bc
-    PATH_SUFFIXES 
+find_path(OPENCL_ROOT lib/x86_64/libOpenCL.so.1
+    PATH_SUFFIXES
         opencl
         lib/opencl
     PATHS
@@ -22,6 +22,25 @@ find_path(OPENCL_ROOT lib/x86_64/bitcode/opencl.amdgcn.bc
 if(NOT OPENCL_ROOT)
     message(FATAL_ERROR "Can't find opencl")
 endif()
+
+find_path(HCC_ROOT bin/hcc
+    PATH_SUFFIXES
+        hcc
+    PATHS
+        /opt/rocm
+)
+if(NOT HCC_ROOT)
+    message(FATAL_ERROR "Can't find hcc")
+endif()
+
+set(CLANG_ROOT "${HCC_ROOT}")
+set(BITCODE_DIR "${HCC_ROOT}/lib")
+
+message("")
+message("--------OPENCL_ROOT: ${OPENCL_ROOT}")
+message("---------CLANG_ROOT: ${CLANG_ROOT}")
+message("--------BITCODE_DIR: ${BITCODE_DIR}")
+message("")
 
 find_program(CLINFO clinfo PATHS ${OPENCL_ROOT}/bin/x86_64/)
 execute_process(COMMAND ${CLINFO} OUTPUT_VARIABLE CLINFO_OUT RESULT_VARIABLE RESULT)
@@ -35,8 +54,8 @@ if(RESULT EQUAL 0)
     endif()
     message(STATUS "OpenCL Version: ${OPENCL_VER}")
 else()
-    find_program(LLVM_DIS llvm-dis PATHS /opt/rocm /opt/rocm/hcc)
-    execute_process(COMMAND ${LLVM_DIS} -o - ${OPENCL_ROOT}/lib/x86_64/bitcode/oclc_isa_version_900.amdgcn.bc OUTPUT_VARIABLE LLVM_DIS_OUT)
+    find_program(LLVM_DIS llvm-dis PATHS ${CLANG_ROOT})
+    execute_process(COMMAND ${LLVM_DIS} -o - ${BITCODE_DIR}/oclc_isa_version_900.amdgcn.bc OUTPUT_VARIABLE LLVM_DIS_OUT)
     if(LLVM_DIS_OUT MATCHES "amdgcn-amd-amdhsa-opencl")
         set(TRIPLE amdgcn-amd-amdhsa-opencl)
     else()
