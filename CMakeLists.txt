@@ -12,7 +12,7 @@ include(CTest)
 
 rocm_setup_version(VERSION 0.5.0)
 
-find_path(OPENCL_ROOT lib/x86_64/bitcode/opencl.amdgcn.bc
+find_path(OPENCL_ROOT lib/x86_64/libOpenCL.so.1
     PATH_SUFFIXES 
         opencl
         lib/opencl
