@@ -12,58 +12,24 @@ include(CTest)
 
 rocm_setup_version(VERSION 0.5.0)
 
-find_path(OPENCL_ROOT lib/x86_64/libOpenCL.so.1
-    PATH_SUFFIXES
-        opencl
-        lib/opencl
-    PATHS
-        /opt/rocm
-)
-if(NOT OPENCL_ROOT)
-    message(FATAL_ERROR "Can't find opencl")
-endif()
-
-find_path(HCC_ROOT bin/hcc
-    PATH_SUFFIXES
-        hcc
-    PATHS
-        /opt/rocm
-)
-if(NOT HCC_ROOT)
+find_program(HCC_EXE hcc PATHS /opt/rocm/hcc)
+get_filename_component(HCC_BIN ${HCC_EXE} DIRECTORY)
+if(NOT HCC_BIN)
     message(FATAL_ERROR "Can't find hcc")
 endif()
 
-set(CLANG_ROOT "${HCC_ROOT}")
-set(BITCODE_DIR "${HCC_ROOT}/lib")
+set(CLANG_BIN "${HCC_BIN}")
+set(BITCODE_DIR "${HCC_BIN}/../lib")
+execute_process(COMMAND bash "-c" "echo | ${CLANG_BIN}/clang -v -x c++ -c - |& grep clang | tail -n1" OUTPUT_VARIABLE OPENCL_INCLUDE OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 message("")
-message("--------OPENCL_ROOT: ${OPENCL_ROOT}")
-message("---------CLANG_ROOT: ${CLANG_ROOT}")
-message("--------BITCODE_DIR: ${BITCODE_DIR}")
+message("--------CLANG_BIN: ${CLANG_BIN}")
+message("------BITCODE_DIR: ${BITCODE_DIR}")
+message("---OPENCL_INCLUDE: ${OPENCL_INCLUDE}")
 message("")
 
-find_program(CLINFO clinfo PATHS ${OPENCL_ROOT}/bin/x86_64/)
-execute_process(COMMAND ${CLINFO} OUTPUT_VARIABLE CLINFO_OUT RESULT_VARIABLE RESULT)
-if(RESULT EQUAL 0)
-    string(REGEX MATCH "Platform Version[^\\(]*\\(([0-9]+).*\\)" PLATFORM_VER ${CLINFO_OUT})
-    set(OPENCL_VER "${CMAKE_MATCH_1}")
-    if(OPENCL_VER LESS 2534)
-        set(TRIPLE amdgcn-amd-amdhsa-opencl)
-    else()
-        set(TRIPLE amdgcn-amd-amdhsa-amdgizcl)
-    endif()
-    message(STATUS "OpenCL Version: ${OPENCL_VER}")
-else()
-    find_program(LLVM_DIS llvm-dis PATHS ${CLANG_ROOT})
-    execute_process(COMMAND ${LLVM_DIS} -o - ${BITCODE_DIR}/oclc_isa_version_900.amdgcn.bc OUTPUT_VARIABLE LLVM_DIS_OUT)
-    if(LLVM_DIS_OUT MATCHES "amdgcn-amd-amdhsa-opencl")
-        set(TRIPLE amdgcn-amd-amdhsa-opencl)
-    else()
-        set(TRIPLE amdgcn-amd-amdhsa-amdgizcl)
-    endif()
-endif()
-
-message(STATUS "OpenCL Triple: ${TRIPLE}")
+set(TRIPLE amdgcn-amd-amdhsa)
+message(STATUS "Triple: ${TRIPLE}")
 
 set(CLANG_OCL ${CMAKE_CURRENT_BINARY_DIR}/clang-ocl)
 
