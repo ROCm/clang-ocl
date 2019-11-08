@@ -20,12 +20,10 @@ endif()
 
 set(CLANG_BIN "${HCC_BIN}")
 set(BITCODE_DIR "${HCC_BIN}/../lib")
-execute_process(COMMAND bash "-c" "echo | ${CLANG_BIN}/clang -v -x c++ -c - |& grep clang | tail -n1" OUTPUT_VARIABLE OPENCL_INCLUDE OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 message("")
 message("--------CLANG_BIN: ${CLANG_BIN}")
 message("------BITCODE_DIR: ${BITCODE_DIR}")
-message("---OPENCL_INCLUDE: ${OPENCL_INCLUDE}")
 message("")
 
 set(TRIPLE amdgcn-amd-amdhsa)
