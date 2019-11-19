@@ -12,9 +12,16 @@ include(CTest)
 
 rocm_setup_version(VERSION 0.5.0)
 
-find_program(HCC_EXE hcc PATHS /opt/rocm/hcc)
+if(CMAKE_CXX_COMPILER MATCHES ".*hcc")
+    set(HCC_EXE ${CMAKE_CXX_COMPILER})
+else()
+    find_program(HCC_EXE NAMES hcc clang PATHS /opt/rocm/hcc/bin)
+endif()
+
 get_filename_component(HCC_BIN ${HCC_EXE} DIRECTORY)
 if(NOT HCC_BIN)
+    message("HCC_EXE: ${HCC_EXE}")
+    message("HCC_BIN: ${HCC_BIN}")
     message(FATAL_ERROR "Can't find hcc")
 endif()
 
