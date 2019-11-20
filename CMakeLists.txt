@@ -12,39 +12,29 @@ include(CTest)
 
 rocm_setup_version(VERSION 0.5.0)
 
-find_path(OPENCL_ROOT lib/x86_64/bitcode/opencl.amdgcn.bc
-    PATH_SUFFIXES 
-        opencl
-        lib/opencl
-    PATHS
-        /opt/rocm
-)
-if(NOT OPENCL_ROOT)
-    message(FATAL_ERROR "Can't find opencl")
-endif()
-
-find_program(CLINFO clinfo PATHS ${OPENCL_ROOT}/bin/x86_64/)
-execute_process(COMMAND ${CLINFO} OUTPUT_VARIABLE CLINFO_OUT RESULT_VARIABLE RESULT)
-if(RESULT EQUAL 0)
-    string(REGEX MATCH "Platform Version[^\\(]*\\(([0-9]+).*\\)" PLATFORM_VER ${CLINFO_OUT})
-    set(OPENCL_VER "${CMAKE_MATCH_1}")
-    if(OPENCL_VER LESS 2534)
-        set(TRIPLE amdgcn-amd-amdhsa-opencl)
-    else()
-        set(TRIPLE amdgcn-amd-amdhsa-amdgizcl)
-    endif()
-    message(STATUS "OpenCL Version: ${OPENCL_VER}")
+if(CMAKE_CXX_COMPILER MATCHES ".*hcc")
+    set(HCC_EXE ${CMAKE_CXX_COMPILER})
 else()
-    find_program(LLVM_DIS llvm-dis PATHS /opt/rocm /opt/rocm/hcc)
-    execute_process(COMMAND ${LLVM_DIS} -o - ${OPENCL_ROOT}/lib/x86_64/bitcode/oclc_isa_version_900.amdgcn.bc OUTPUT_VARIABLE LLVM_DIS_OUT)
-    if(LLVM_DIS_OUT MATCHES "amdgcn-amd-amdhsa-opencl")
-        set(TRIPLE amdgcn-amd-amdhsa-opencl)
-    else()
-        set(TRIPLE amdgcn-amd-amdhsa-amdgizcl)
-    endif()
+    find_program(HCC_EXE NAMES hcc clang PATHS /opt/rocm/hcc/bin)
 endif()
 
-message(STATUS "OpenCL Triple: ${TRIPLE}")
+get_filename_component(HCC_BIN ${HCC_EXE} DIRECTORY)
+if(NOT HCC_BIN)
+    message("HCC_EXE: ${HCC_EXE}")
+    message("HCC_BIN: ${HCC_BIN}")
+    message(FATAL_ERROR "Can't find hcc")
+endif()
+
+set(CLANG_BIN "${HCC_BIN}")
+set(BITCODE_DIR "${HCC_BIN}/../lib")
+
+message("")
+message("--------CLANG_BIN: ${CLANG_BIN}")
+message("------BITCODE_DIR: ${BITCODE_DIR}")
+message("")
+
+set(TRIPLE amdgcn-amd-amdhsa)
+message(STATUS "Triple: ${TRIPLE}")
 
 set(CLANG_OCL ${CMAKE_CURRENT_BINARY_DIR}/clang-ocl)
 
