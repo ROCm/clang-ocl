@@ -25,8 +25,8 @@ if(NOT HCC_BIN)
     message(FATAL_ERROR "Can't find hcc")
 endif()
 
-set(CLANG_BIN "${HCC_BIN}")
-set(BITCODE_DIR "${HCC_BIN}/../lib")
+set(CLANG_BIN "${HCC_BIN}" CACHE STRING "")
+set(BITCODE_DIR "${HCC_BIN}/../lib" CACHE STRING "")
 
 message("")
 message("--------CLANG_BIN: ${CLANG_BIN}")
