@@ -45,7 +45,7 @@ add_subdirectory(test)
 install(PROGRAMS ${CLANG_OCL} DESTINATION bin)
 
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "rocm-opencl-dev")
-set(CPACK_RPM_PACKAGE_REQUIRES "rocm-opencl-devel")
+set(CPACK_RPM_PACKAGE_REQUIRES "rocm-opencl-dev")
 rocm_create_package(
     NAME rocm-clang-ocl
     DESCRIPTION "OpenCL compilation with clang compiler."
