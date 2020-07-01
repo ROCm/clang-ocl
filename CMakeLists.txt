@@ -12,25 +12,21 @@ include(CTest)
 
 rocm_setup_version(VERSION 0.5.0)
 
-if(CMAKE_CXX_COMPILER MATCHES ".*hcc")
-    set(HCC_EXE ${CMAKE_CXX_COMPILER})
-else()
-    find_program(HCC_EXE NAMES hcc clang PATHS /opt/rocm/hcc/bin)
+find_program(CLANG_EXE NAMES clang PATHS /opt/rocm/llvm/bin)
+
+get_filename_component(CLANG_BIN ${CLANG_EXE} DIRECTORY)
+if(NOT CLANG_BIN)
+    message("CLANG_EXE: ${CLANG_EXE}")
+    message("CLANG_BIN: ${CLANG_BIN}")
+    message(FATAL_ERROR "Can't find clang")
 endif()
 
-get_filename_component(HCC_BIN ${HCC_EXE} DIRECTORY)
-if(NOT HCC_BIN)
-    message("HCC_EXE: ${HCC_EXE}")
-    message("HCC_BIN: ${HCC_BIN}")
-    message(FATAL_ERROR "Can't find hcc")
-endif()
-
-set(CLANG_BIN "${HCC_BIN}" CACHE STRING "")
-set(BITCODE_DIR "${HCC_BIN}/../lib" CACHE STRING "")
+set(ROCM_PATH "${CMAKE_INSTALL_PREFIX}" CACHE STRING "")
+set(CLANG_BIN "${CLANG_BIN}" CACHE STRING "")
 
 message("")
+message("--------ROCM_PATH: ${ROCM_PATH}")
 message("--------CLANG_BIN: ${CLANG_BIN}")
-message("------BITCODE_DIR: ${BITCODE_DIR}")
 message("")
 
 set(TRIPLE amdgcn-amd-amdhsa)
