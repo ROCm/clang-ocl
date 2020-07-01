@@ -52,14 +52,14 @@ ${CLANG} -c -emit-llvm \
 ${options} -o ${output_file}.orig.bc ${input_file}
  
 ${LLVM_LINK} -f -o ${output_file}.linked.bc ${output_file}.orig.bc \
-$BITCODE_DIR/opencl.amdgcn.bc \
-$BITCODE_DIR/ocml.amdgcn.bc \
-$BITCODE_DIR/ockl.amdgcn.bc \
-$BITCODE_DIR/oclc_correctly_rounded_sqrt_off.amdgcn.bc \
-$BITCODE_DIR/oclc_daz_opt_on.amdgcn.bc \
-$BITCODE_DIR/oclc_finite_only_off.amdgcn.bc \
-$BITCODE_DIR/oclc_isa_version_${gfxip}.amdgcn.bc \
-$BITCODE_DIR/oclc_unsafe_math_off.amdgcn.bc |& tee ${output_file}.linked.bc.out
+$BITCODE_DIR/opencl.bc \
+$BITCODE_DIR/ocml.bc \
+$BITCODE_DIR/ockl.bc \
+$BITCODE_DIR/oclc_correctly_rounded_sqrt_off.bc \
+$BITCODE_DIR/oclc_daz_opt_on.bc \
+$BITCODE_DIR/oclc_finite_only_off.bc \
+$BITCODE_DIR/oclc_isa_version_${gfxip}.bc \
+$BITCODE_DIR/oclc_unsafe_math_off.bc |& tee ${output_file}.linked.bc.out
 
 # Fail on warnings
 if grep -qi warning ${output_file}.linked.bc.out; then

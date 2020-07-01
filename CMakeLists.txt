@@ -12,6 +12,8 @@ include(CTest)
 
 rocm_setup_version(VERSION 0.5.0)
 
+# FIXME: hcc has been removed
+# all hcc refernces shld be removed/updated
 if(CMAKE_CXX_COMPILER MATCHES ".*hcc")
     set(HCC_EXE ${CMAKE_CXX_COMPILER})
 else()
@@ -26,7 +28,7 @@ if(NOT HCC_BIN)
 endif()
 
 set(CLANG_BIN "${HCC_BIN}" CACHE STRING "")
-set(BITCODE_DIR "${HCC_BIN}/../lib" CACHE STRING "")
+set(BITCODE_DIR "${HCC_BIN}/../amdgcn/bitcode" CACHE STRING "")
 
 message("")
 message("--------CLANG_BIN: ${CLANG_BIN}")
