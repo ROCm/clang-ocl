@@ -24,15 +24,29 @@ else()
     get_filename_component(CLANG_EXE_DIR ${CLANG_EXE} DIRECTORY)
     find_package(AMDDeviceLibs PATHS /opt/rocm)
     set(CLANG_BIN "${CLANG_EXE_DIR}" CACHE STRING "")
-    set(BITCODE_DIR "${AMD_DEVICE_LIBS_PREFIX}/lib" CACHE STRING "")
+
+    # Support building with new and old device-lib paths
+    # Previously installed to /opt/rocm/lib
+    # New layout installed to /opt/rocm/amdgcn/bitcode
+    find_path(BC_DIR NAMES "opencl.bc" "opencl.amdgcn.bc"
+      PATHS
+        "${AMD_DEVICE_LIBS_PREFIX}/amdgcn/bitcode"
+        "${AMD_DEVICE_LIBS_PREFIX}/lib/bitcode"
+        "${AMD_DEVICE_LIBS_PREFIX}/lib"
+      NO_DEFAULT_PATH)
+
+    set(BITCODE_DIR "${BC_DIR}" CACHE STRING "")
 endif()
 
-if(NOT EXISTS "${CLANG_BIN}/clang")
-    message(SEND_ERROR "Clang is not found.")
-endif()
+set(DISABLE_CHECKS OFF CACHE BOOL "Disable checking variables exist.")
+if(NOT DISABLE_CHECKS)
+    if(NOT EXISTS "${CLANG_BIN}/clang")
+        message(SEND_ERROR "Clang is not found.")
+    endif()
 
-if(NOT EXISTS "${BITCODE_DIR}")
-    message(SEND_ERROR "Device libs is not found.")
+    if(NOT EXISTS "${BITCODE_DIR}")
+        message(SEND_ERROR "Device libs is not found.")
+    endif()
 endif()
 
 message("")
