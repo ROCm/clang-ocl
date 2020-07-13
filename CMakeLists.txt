@@ -25,8 +25,26 @@ if(NOT HCC_BIN)
     message(FATAL_ERROR "Can't find hcc")
 endif()
 
+# Support building in new and old device-lib environments
+# Previously installed to /opt/rocm/lib
+# Starting ROCm 3.8 installed to /opt/rocm/amdgcn/bitcode
+find_path(BC_DIR
+  NAMES
+    "opencl.bc"
+    "opencl.amdgcn.bc"
+  PATHS
+    "${ROCM_DIR}/amdgcn/bitcode"
+    "${ROCM_DIR}/lib/bitcode"
+    "${ROCM_DIR}/lib"
+    "${HCC_BIN}/../lib/bitcode"
+    "${HCC_BIN}/../lib"
+    "${CMAKE_INSTALL_PREFIX}/amdgcn/bitcode"
+    "${CMAKE_INSTALL_PREFIX}/lib/bitcode"
+    "${CMAKE_INSTALL_PREFIX}/lib")
+
+# Allow these variables to be overridden by cmake options
 set(CLANG_BIN "${HCC_BIN}" CACHE STRING "")
-set(BITCODE_DIR "${HCC_BIN}/../lib" CACHE STRING "")
+set(BITCODE_DIR "${BC_DIR}" CACHE STRING "")
 
 message("")
 message("--------CLANG_BIN: ${CLANG_BIN}")
