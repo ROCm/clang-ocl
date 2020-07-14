@@ -11,11 +11,16 @@ LLVM_LINK=${CLANG_BIN}/llvm-link
 TRIPLE=@TRIPLE@
 
 gfxip=803
+
+INVOKE_LLVM_BACKEND=1
  
 while (( "$#" ))
 do
     arg="$1"
     case "$arg" in
+    -c)
+        INVOKE_LLVM_BACKEND=0
+        ;;
     -o)
         shift
         output_file=$1
@@ -66,15 +71,19 @@ if grep -qi warning ${output_file}.linked.bc.out; then
     echo "llvm-link failed!"
     exit 1
 fi
- 
-${CLANG} \
--target $TRIPLE \
--O3 \
--m64 \
--cl-kernel-arg-info \
--mllvm -amdgpu-internalize-symbols -mllvm -amdgpu-early-inline-all \
--Xclang -target-feature -Xclang -code-object-v3 \
-${options} -o ${output_file} ${output_file}.linked.bc
+
+if [[ "$INVOKE_LLVM_BACKEND" == 1 ]]; then
+  ${CLANG} \
+  -target $TRIPLE \
+  -O3 \
+  -m64 \
+  -cl-kernel-arg-info \
+  -mllvm -amdgpu-internalize-symbols -mllvm -amdgpu-early-inline-all \
+  -Xclang -target-feature -Xclang -code-object-v3 \
+  ${options} -o ${output_file} ${output_file}.linked.bc
+else
+  mv ${output_file}.linked.bc ${output_file}
+fi
 
 # Remove extra files
 rm ${output_file}.linked.bc*
