@@ -66,12 +66,6 @@ ${CLANG} -c -emit-llvm \
 ${BITCODE_ARGS} \
 ${options} -o ${output_file}.linked.bc ${input_file}
 
-# Fail on warnings
-if grep -qi warning ${output_file}.linked.bc.out; then
-    echo "clang failed!"
-    exit 1
-fi
-
 ${CLANG} \
 -target $TRIPLE \
 -O3 \
