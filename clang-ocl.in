@@ -71,6 +71,7 @@ ${CLANG} \
 -O3 \
 -m64 \
 -cl-kernel-arg-info \
+-nogpulib \
 -mllvm -amdgpu-internalize-symbols -mllvm -amdgpu-early-inline-all \
 -Xclang -target-feature -Xclang -code-object-v3 \
 ${options} -o ${output_file} ${output_file}.linked.bc
