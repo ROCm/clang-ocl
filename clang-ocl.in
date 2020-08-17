@@ -34,16 +34,14 @@ do
 done
 
 if [ -e $BITCODE_DIR/opencl.amdgcn.bc ]; then
-  BITCODE_PREF="-Xclang -mlink-bitcode-file -Xclang"
-  BITCODE_ARGS="-nogpulib \
-    $BITCODE_PREF $BITCODE_DIR/opencl.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/ocml.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/ockl.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/oclc_correctly_rounded_sqrt_off.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/oclc_daz_opt_on.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/oclc_finite_only_off.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/oclc_isa_version_${gfxip}.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/oclc_unsafe_math_off.amdgcn.bc"
+  BITCODE_ARGS="$BITCODE_DIR/opencl.amdgcn.bc \
+    $BITCODE_DIR/ocml.amdgcn.bc \
+    $BITCODE_DIR/ockl.amdgcn.bc \
+    $BITCODE_DIR/oclc_correctly_rounded_sqrt_off.amdgcn.bc \
+    $BITCODE_DIR/oclc_daz_opt_on.amdgcn.bc \
+    $BITCODE_DIR/oclc_finite_only_off.amdgcn.bc \
+    $BITCODE_DIR/oclc_isa_version_${gfxip}.amdgcn.bc \
+    $BITCODE_DIR/oclc_unsafe_math_off.amdgcn.bc"
 else
   BITCODE_ARGS="--hip-device-lib-path=${BITCODE_DIR}"
 fi
@@ -63,8 +61,9 @@ ${CLANG} -c -emit-llvm \
 -Xclang -target-feature -Xclang -code-object-v3 \
 -Xclang -cl-ext=+cl_khr_fp64,+cl_khr_global_int32_base_atomics,+cl_khr_global_int32_extended_atomics,+cl_khr_local_int32_base_atomics,+cl_khr_local_int32_extended_atomics,+cl_khr_int64_base_atomics,+cl_khr_int64_extended_atomics,+cl_khr_3d_image_writes,+cl_khr_byte_addressable_store,+cl_khr_gl_sharing,+cl_amd_media_ops,+cl_amd_media_ops2,+cl_khr_subgroups \
 -include ${OPENCL_INCLUDE}/opencl-c.h \
-${BITCODE_ARGS} \
-${options} -o ${output_file}.linked.bc ${input_file}
+${options} -o ${output_file}.orig.bc ${input_file}
+
+${LLVM_LINK} -f -o ${output_file}.linked.bc ${output_file}.orig.bc ${BITCODE_ARGS}
 
 ${CLANG} \
 -target $TRIPLE \
