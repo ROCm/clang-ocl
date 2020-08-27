@@ -33,20 +33,21 @@ do
     shift
 done
 
+# Support new device-lib suffix .bc
 if [ -e $BITCODE_DIR/opencl.amdgcn.bc ]; then
-  BITCODE_PREF="-Xclang -mlink-bitcode-file -Xclang"
-  BITCODE_ARGS="-nogpulib \
-    $BITCODE_PREF $BITCODE_DIR/opencl.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/ocml.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/ockl.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/oclc_correctly_rounded_sqrt_off.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/oclc_daz_opt_on.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/oclc_finite_only_off.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/oclc_isa_version_${gfxip}.amdgcn.bc \
-    $BITCODE_PREF $BITCODE_DIR/oclc_unsafe_math_off.amdgcn.bc"
+    BC_SUFFIX="amdgcn.bc"
 else
-  BITCODE_ARGS="--hip-device-lib-path=${BITCODE_DIR}"
+    BC_SUFFIX="bc"
 fi
+
+BITCODE_ARGS="$BITCODE_DIR/opencl.$BC_SUFFIX \
+    $BITCODE_DIR/ocml.$BC_SUFFIX \
+    $BITCODE_DIR/ockl.$BC_SUFFIX \
+    $BITCODE_DIR/oclc_correctly_rounded_sqrt_off.$BC_SUFFIX \
+    $BITCODE_DIR/oclc_daz_opt_on.$BC_SUFFIX \
+    $BITCODE_DIR/oclc_finite_only_off.$BC_SUFFIX \
+    $BITCODE_DIR/oclc_isa_version_${gfxip}.$BC_SUFFIX \
+    $BITCODE_DIR/oclc_unsafe_math_off.$BC_SUFFIX"
 
 ${CLANG} -c -emit-llvm \
 -target $TRIPLE -x cl \
@@ -58,13 +59,22 @@ ${CLANG} -c -emit-llvm \
 -O3 \
 -m64 \
 -cl-kernel-arg-info \
+-nogpulib \
 -cl-std=CL1.2 \
 -mllvm -amdgpu-early-inline-all \
 -Xclang -target-feature -Xclang -code-object-v3 \
 -Xclang -cl-ext=+cl_khr_fp64,+cl_khr_global_int32_base_atomics,+cl_khr_global_int32_extended_atomics,+cl_khr_local_int32_base_atomics,+cl_khr_local_int32_extended_atomics,+cl_khr_int64_base_atomics,+cl_khr_int64_extended_atomics,+cl_khr_3d_image_writes,+cl_khr_byte_addressable_store,+cl_khr_gl_sharing,+cl_amd_media_ops,+cl_amd_media_ops2,+cl_khr_subgroups \
 -include ${OPENCL_INCLUDE}/opencl-c.h \
-${BITCODE_ARGS} \
-${options} -o ${output_file}.linked.bc ${input_file}
+${options} -o ${output_file}.orig.bc ${input_file}
+
+${LLVM_LINK} -f -o ${output_file}.linked.bc ${output_file}.orig.bc \
+${BITCODE_ARGS} |& tee ${output_file}.linked.bc.out
+
+# Fail on warnings
+if grep -qi warning ${output_file}.linked.bc.out; then
+    echo "llvm-link failed!"
+    exit 1
+fi
 
 ${CLANG} \
 -target $TRIPLE \
