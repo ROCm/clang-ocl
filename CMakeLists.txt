@@ -65,8 +65,8 @@ add_subdirectory(test)
 
 install(PROGRAMS ${CLANG_OCL} DESTINATION bin)
 
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "llvm-amdgpu, rocm-opencl-dev")
-set(CPACK_RPM_PACKAGE_REQUIRES "llvm-amdgpu, rocm-opencl-devel")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "rocm-llvm, rocm-opencl-dev")
+set(CPACK_RPM_PACKAGE_REQUIRES "rocm-llvm, rocm-opencl-devel")
 rocm_create_package(
     NAME rocm-clang-ocl
     DESCRIPTION "OpenCL compilation with clang compiler."
