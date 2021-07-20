@@ -65,8 +65,14 @@ add_subdirectory(test)
 
 install(PROGRAMS ${CLANG_OCL} DESTINATION bin)
 
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "rocm-llvm, rocm-opencl-dev")
-set(CPACK_RPM_PACKAGE_REQUIRES "rocm-llvm, rocm-opencl-devel")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "rocm-llvm, rocm-opencl-dev, rocm-core")
+set(CPACK_RPM_PACKAGE_REQUIRES "rocm-llvm, rocm-opencl-devel, rocm-core")
+# Remove dependency on rocm-core if -DROCM_DEP_ROCMCORE=ON not given to cmake
+if(NOT ROCM_DEP_ROCMCORE)
+    string(REGEX REPLACE ",? ?rocm-core" "" CPACK_RPM_PACKAGE_REQUIRES ${CPACK_RPM_PACKAGE_REQUIRES})
+    string(REGEX REPLACE ",? ?rocm-core" "" CPACK_DEBIAN_PACKAGE_DEPENDS ${CPACK_DEBIAN_PACKAGE_DEPENDS})
+endif()
+
 rocm_create_package(
     NAME rocm-clang-ocl
     DESCRIPTION "OpenCL compilation with clang compiler."
