@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.5)
 
 # Default installation path
 set(CMAKE_INSTALL_PREFIX "/opt/rocm" CACHE PATH "")
