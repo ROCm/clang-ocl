@@ -62,8 +62,13 @@ set(CLANG_OCL ${CMAKE_CURRENT_BINARY_DIR}/clang-ocl)
 configure_file(clang-ocl.in ${CLANG_OCL} @ONLY)
 
 add_subdirectory(test)
+#File reorganization
+option(FILE_REORG_BACKWARD_COMPATIBILITY "Enable File Reorg with backward compatibility" ON)
+if(FILE_REORG_BACKWARD_COMPATIBILITY)
+  include(clangocl-backward-compat.cmake)
+endif()
 
-install(PROGRAMS ${CLANG_OCL} DESTINATION bin)
+install(PROGRAMS ${CLANG_OCL} DESTINATION libexec/clang-ocl)
 
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "rocm-llvm, rocm-opencl-dev")
 set(CPACK_RPM_PACKAGE_REQUIRES "rocm-llvm, rocm-opencl-devel")
