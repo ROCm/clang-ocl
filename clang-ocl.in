@@ -4,7 +4,7 @@ set -e
 
 CLANG_BIN=@CLANG_BIN@
 BITCODE_DIR=@BITCODE_DIR@
-OPENCL_INCLUDE=`echo | ${CLANG_BIN}/clang -v -x c++ -c - |& grep clang | tail -n1`
+OPENCL_INCLUDE=`echo | ${CLANG_BIN}/clang -v -x c++ -c - -o /dev/null |& grep clang | tail -n1`
 CLANG=${CLANG_BIN}/clang
 LLVM_LINK=${CLANG_BIN}/llvm-link
 
