@@ -6,6 +6,7 @@ set(CMAKE_INSTALL_PREFIX "/opt/rocm" CACHE PATH "")
 project(clang-ocl)
 
 find_package(ROCM PATHS /opt/rocm)
+include(GNUInstallDirs)
 include(ROCMSetupVersion)
 include(ROCMCreatePackage)
 include(CTest)
@@ -63,7 +64,7 @@ configure_file(clang-ocl.in ${CLANG_OCL} @ONLY)
 
 add_subdirectory(test)
 
-install(PROGRAMS ${CLANG_OCL} DESTINATION bin)
+install(PROGRAMS ${CLANG_OCL} DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "rocm-llvm, rocm-opencl-dev")
 set(CPACK_RPM_PACKAGE_REQUIRES "rocm-llvm, rocm-opencl-devel")
