@@ -84,6 +84,7 @@ fi
 BITCODE_ARGS="$BITCODE_DIR/opencl.$BC_SUFFIX \
     $BITCODE_DIR/ocml.$BC_SUFFIX \
     $BITCODE_DIR/ockl.$BC_SUFFIX \
+    $BITCODE_DIR/oclc_abi_version_400.$BC_SUFFIX \
     $BITCODE_DIR/oclc_correctly_rounded_sqrt_off.$BC_SUFFIX \
     $BITCODE_DIR/oclc_daz_opt_on.$BC_SUFFIX \
     $BITCODE_DIR/oclc_finite_only_off.$BC_SUFFIX \
