@@ -89,9 +89,6 @@ else
     BC_SUFFIX="bc"
 fi
 
-echo "DBG: $codeobjver"
-exit
-
 BITCODE_ARGS="$BITCODE_DIR/opencl.$BC_SUFFIX \
     $BITCODE_DIR/ocml.$BC_SUFFIX \
     $BITCODE_DIR/ockl.$BC_SUFFIX \
