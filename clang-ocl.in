@@ -62,15 +62,15 @@ do
         shift
         output_file=$1
         ;;
-    -mcpu=gfx*)
-        gfxip=${1##*gfx}
-        ;&
     -mcode-object-version=*)
         codeobjver=${1##*=}
         if [ "$codeobjver" -le 4 ]; then
             codeobjver=4
         fi
         options="${options} $1"
+        ;;
+    -mcpu=gfx*)
+        gfxip=${1##*gfx}
         ;&
     [-\+]*)
         options="${options} $1"
@@ -88,6 +88,9 @@ if [ -e $BITCODE_DIR/opencl.amdgcn.bc ]; then
 else
     BC_SUFFIX="bc"
 fi
+
+echo "DBG: $codeobjver"
+exit
 
 BITCODE_ARGS="$BITCODE_DIR/opencl.$BC_SUFFIX \
     $BITCODE_DIR/ocml.$BC_SUFFIX \
