@@ -1,4 +1,4 @@
-**Note: As of December 2023, this project is deprecated and will be moved to 'archive' status in the near future**
+**Note: As of December 2023, this project is deprecated and will be archived in the near future**
 
 clang-ocl
 =========
